@@ -41,6 +41,13 @@ cd tests_frontend
 ./run_local.sh
 ```
 
+### Dica rápida (erro de browser ausente)
+Se o Pytest pular os testes com a mensagem:
+```
+Playwright browsers não encontrados. Execute 'playwright install' antes de rodar os testes.
+```
+basta rodar o comando `playwright install` para baixar os navegadores necessários.
+
 ## Screenshots
 - Salvos automaticamente em `evidencias/<YYYY-MM-DD>/` quando `screenshot_on_fail=True` nas asserções ou via hook do pytest-html.
 - Para desabilitar (por exemplo, em pipeline), defina `DISABLE_SCREENSHOTS=1` no ambiente.

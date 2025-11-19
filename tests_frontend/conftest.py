@@ -1,5 +1,5 @@
 import pytest
-from playwright.sync_api import sync_playwright
+from playwright.sync_api import Error, sync_playwright
 from pytest_html import extras as html_extras
 
 from core.screenshot_service import ScreenshotService
@@ -17,7 +17,15 @@ def playwright_instance():
 
 @pytest.fixture(scope="session")
 def browser(playwright_instance):
-    browser = playwright_instance.chromium.launch(headless=True)
+    try:
+        browser = playwright_instance.chromium.launch(headless=True)
+    except Error as exc:  # navegadores Playwright ausentes
+        pytest.skip(
+            "Playwright browsers não encontrados. Execute 'playwright install' antes de rodar os testes.",
+            allow_module_level=True,
+        )
+        raise exc
+
     yield browser
     browser.close()
 
