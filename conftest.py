@@ -4,7 +4,7 @@ from pytest_html import extras as html_extras
 
 from core.screenshot_service import ScreenshotService
 
-BASE_URL = "https://exemplo-seu-sistema.com"
+BASE_URL = "https://www.google.com"
 
 
 # ---------------- FIXTURES PLAYWRIGHT ----------------
@@ -18,7 +18,7 @@ def playwright_instance():
 @pytest.fixture(scope="session")
 def browser(playwright_instance):
     try:
-        browser = playwright_instance.chromium.launch(headless=True)
+        browser = playwright_instance.chromium.launch(headless=False)
     except Error as exc:  # navegadores Playwright ausentes
         pytest.skip(
             "Playwright browsers não encontrados. Execute 'playwright install' antes de rodar os testes.",
