@@ -38,13 +38,15 @@ class BasePage:
         """Abre uma URL absoluta usando o navegador controlado pelo Playwright."""
         self.page.goto(url)
 
-    def click(self, locator: Locatable):
-        """Realiza clique em um locator já resolvido ou seletor CSS/XPath.
+    def click(self, locator: Locatable, timeout: Optional[int] = None):
+        """Realiza clique aguardando o elemento ficar disponível para interação.
 
         Args:
             locator: Seletor de string ou locator Playwright para clique.
+            timeout: Tempo máximo de espera para o elemento ficar visível.
         """
-        self._resolve_locator(locator).click()
+        resolved = self.wait_for_locator(locator, state="visible", timeout=timeout)
+        resolved.click()
 
     def click_and_select(self, box_locator: Locatable, option_locator: Locatable):
         """Abre um seletor customizado clicando no box e escolhe a opção desejada.
