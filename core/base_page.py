@@ -1,10 +1,10 @@
 import re
+import logging
 from typing import Literal, Optional, Union
 from playwright.sync_api import Locator, Page, expect
-
 from core.screenshot_service import ScreenshotService
 
-
+logger = logging.getLogger(__name__)
 Locatable = Union[str, Locator]
 
 

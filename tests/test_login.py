@@ -5,5 +5,5 @@ def test_login_sucesso(page, screenshot_service, base_url):
     login_page = LoginPage(page, screenshot_service)
 
     login_page.abrir(base_url)
-    # login_page.realizar_login("usuario_valido", "senha_valida")
-    login_page.validar_tela_login()
+    print('acessou area login')
+    login_page.realizar_login("thrashers.013@gmail.com", "senha_valida")

@@ -4,7 +4,7 @@ from core.base_page import BasePage
 from core.screenshot_service import ScreenshotService
 
 
-class LoginPage(BasePage):
+class CreatedAccountPage(BasePage):
     """Modela a tela de autenticação com seletores centrais reutilizáveis."""
 
     def __init__(self, page: Page, screenshot_service: Optional[ScreenshotService] = None):
@@ -15,11 +15,10 @@ class LoginPage(BasePage):
             screenshot_service: Serviço opcional para evidências em falhas.
         """
         super().__init__(page, screenshot_service)
-        self.fazer_login_click = page.locator("//a[@aria-label='Fazer login']")
-        self.usuario_input = page.locator("input[type='email']")
-        self.avancar_button = page.locator("//button[.//span[text()='Avançar']]")
-        self.criar_conta_button = page.locator("//button[.//span[text()='Criar conta']]")
-        self.uso_pessoal_button = page.locator("//li[.//span[text()='Para uso pessoal']]")
+        self.nome_input = page.locator("input[type='email']")
+        self.sobrenome_input = page.locator("//button[.//span[text()='Avançar']]")
+        self.dia_input = page.locator("//button[.//span[text()='Avançar']]")
+        self.mes_box = page.get_by_role("combobox")
         self.senha_input = page.locator("input[name='senha']")
         self.submit_button = page.locator("button[type='submit']")
 
