@@ -4,7 +4,27 @@ from pytest_html import extras as html_extras
 
 from core.screenshot_service import ScreenshotService
 
-BASE_URL = "https://www.google.com"
+
+ENV_URLS = {
+    "dev": "https://www.google.com",
+    "hml": "https://www.google.com",
+    "prod": "https://www.google.com",
+}
+
+
+def pytest_addoption(parser):
+    parser.addoption(
+        "--env",
+        action="store",
+        default="dev",
+        help="Ambiente alvo (dev, hml, prod). Pode ser usado para definir URLs específicas.",
+    )
+    parser.addoption(
+        "--base-url",
+        action="store",
+        default=None,
+        help="URL base personalizada. Se informada, tem prioridade sobre o mapeamento por ambiente.",
+    )
 
 
 # ---------------- FIXTURES PLAYWRIGHT ----------------
@@ -31,11 +51,16 @@ def browser(playwright_instance):
 
 
 @pytest.fixture
-def page(browser):
-    context = browser.new_context()
+def context(browser, base_url):
+    context = browser.new_context(base_url=base_url)
+    yield context
+    context.close()
+
+
+@pytest.fixture
+def page(context):
     page = context.new_page()
     yield page
-    context.close()
 
 
 # ---------------- FIXTURES DE CONFIG / SERVICE ----------------
@@ -46,8 +71,18 @@ def screenshot_service():
 
 
 @pytest.fixture(scope="session")
-def base_url():
-    return BASE_URL
+def base_url(pytestconfig):
+    custom_url = pytestconfig.getoption("--base-url")
+    if custom_url:
+        return custom_url
+
+    env = pytestconfig.getoption("--env").lower()
+    if env not in ENV_URLS:
+        raise pytest.UsageError(
+            f"Ambiente '{env}' não suportado. Use um de: {', '.join(ENV_URLS.keys())}."
+        )
+
+    return ENV_URLS[env]
 
 
 # ---------------- HOOK pytest-html (opcional) ----------------

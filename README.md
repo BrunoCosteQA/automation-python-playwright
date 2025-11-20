@@ -41,6 +41,16 @@ cd tests_frontend
 ./run_local.sh
 ```
 
+### Configuração de URL por ambiente
+O fixture `base_url` pode ser configurado via linha de comando de duas formas:
+
+- Selecionando um ambiente predefinido: `pytest --env=hml`
+- Informando uma URL personalizada (sobrescreve o ambiente): `pytest --base-url=https://minha-url.com`
+
+Ambientes disponíveis: `dev` (padrão), `hml` e `prod`.
+
+O contexto do Playwright já é iniciado com essa `base_url`, permitindo usar caminhos relativos (por exemplo, `page.goto("/")`) sem precisar repetir a URL completa.
+
 ### Dica rápida (erro de browser ausente)
 Se o Pytest pular os testes com a mensagem:
 ```
