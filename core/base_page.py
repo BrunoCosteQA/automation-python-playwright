@@ -1,7 +1,11 @@
+import logging
 from typing import Optional
 from playwright.sync_api import Page, expect
 
 from core.screenshot_service import ScreenshotService
+
+
+logger = logging.getLogger(__name__)
 
 
 class BasePage:
@@ -28,6 +32,10 @@ class BasePage:
         Se falhar e screenshot_on_fail=True:
         - Usa ScreenshotService para evidência.
         """
+        logger.info(
+            "Validating text visibility",
+            extra={"locator_strategy": "get_by_text", "expected_text": text},
+        )
         try:
             expect(self.page.get_by_text(text)).to_be_visible()
         except AssertionError:
