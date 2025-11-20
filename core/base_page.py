@@ -90,6 +90,10 @@ class BasePage:
         Raises:
             AssertionError: Quando o texto não é encontrado dentro do tempo limite.
         """
+        logger.info(
+            "Validating text visibility",
+            extra={"locator_strategy": "get_by_text", "expected_text": text},
+        )
         try:
             expect(self.page.get_by_text(text)).to_be_visible(timeout=timeout)
         except AssertionError:

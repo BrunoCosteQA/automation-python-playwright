@@ -53,13 +53,28 @@ def browser(playwright_instance):
 @pytest.fixture
 def context(browser, base_url):
     context = browser.new_context(base_url=base_url)
+    try:
+        context.tracing.start(screenshots=True, snapshots=True, sources=True)
+    except Exception:
+        pass
     yield context
+    try:
+        context.tracing.stop()
+    except Exception:
+        pass
     context.close()
 
 
 @pytest.fixture
 def page(context):
     page = context.new_page()
+    console_messages = []
+
+    def _on_console(message):
+        console_messages.append(f"[{message.type}] {message.text}")
+
+    page.on("console", _on_console)
+    page.console_messages = console_messages  # type: ignore[attr-defined]
     yield page
 
 
@@ -99,6 +114,7 @@ def pytest_runtest_makereport(item, call):
     if report.when == "call" and report.failed:
         page = item.funcargs.get("page")
         screenshot_service = item.funcargs.get("screenshot_service")
+        context = item.funcargs.get("context")
 
         if page and screenshot_service:
             safe_name = report.nodeid.replace("::", "_").replace("/", "_")
@@ -109,10 +125,32 @@ def pytest_runtest_makereport(item, call):
 
             name_prefix = f"{safe_name}_{worker_id}"
             screenshot_path = screenshot_service.save(page, name_prefix=name_prefix)
+            console_path = screenshot_service.save_console_logs(
+                getattr(page, "console_messages", []), name_prefix=name_prefix
+            )
+            trace_path = (
+                screenshot_service.export_trace(context, name_prefix=name_prefix)
+                if context
+                else None
+            )
 
+            extra = getattr(report, "extra", [])
             if screenshot_path is not None:
-                extra = getattr(report, "extra", [])
                 extra.append(html_extras.image(str(screenshot_path), mime_type="image/png"))
+            if console_path:
+                extra.append(
+                    html_extras.html(
+                        f'<a href="file://{console_path}" target="_blank">Console logs</a>'
+                    )
+                )
+            if trace_path:
+                extra.append(
+                    html_extras.html(
+                        f'<a href="file://{trace_path}" target="_blank">Playwright trace</a>'
+                    )
+                )
+
+            if extra:
                 report.extra = extra
 
 
