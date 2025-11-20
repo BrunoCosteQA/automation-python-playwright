@@ -46,6 +46,18 @@ class BasePage:
         """
         self._resolve_locator(locator).click()
 
+    def click_and_select(self, box_locator: Locatable, option_locator: Locatable):
+        """Abre um seletor customizado clicando no box e escolhe a opção desejada.
+
+        Args:
+            box_locator: Elemento que dispara a abertura da lista de opções.
+            option_locator: Opção a ser selecionada após a lista estar visível.
+        """
+        box = self._resolve_locator(box_locator)
+        box.click()
+        option = self.wait_for_locator(option_locator)
+        option.click()
+
     def fill(self, locator: Locatable, text: str):
         """Preenche um campo de texto após resolver o locator informado.
 
