@@ -58,6 +58,18 @@ def context(browser, base_url):
         pass
     yield context
     try:
+        for page in list(context.pages):
+            try:
+                page.evaluate(
+                    "() => { window.localStorage.clear(); window.sessionStorage.clear(); }"
+                )
+            except Exception:
+                pass
+        context.clear_cookies()
+        context.clear_permissions()
+    except Exception:
+        pass
+    try:
         context.tracing.stop()
     except Exception:
         pass
