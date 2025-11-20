@@ -32,6 +32,12 @@ class LoginPage(BasePage):
         self.open(base_url)
         self.click(self.fazer_login_click)
 
+    def criar_conta(self):
+        """Preenche as credenciais e aciona o envio do formulário de login.
+        """
+        self.click(self.criar_conta_button)
+        self.click(self.uso_pessoal_button)
+
     def realizar_login(self, usuario: str, senha: str):
         """Preenche as credenciais e aciona o envio do formulário de login.
 

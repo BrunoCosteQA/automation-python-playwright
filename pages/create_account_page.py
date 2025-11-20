@@ -4,7 +4,7 @@ from core.base_page import BasePage
 from core.screenshot_service import ScreenshotService
 
 
-class CreatedAccountPage(BasePage):
+class CreateAccountPage(BasePage):
     """Modela a tela de autenticação com seletores centrais reutilizáveis."""
 
     def __init__(self, page: Page, screenshot_service: Optional[ScreenshotService] = None):
@@ -15,31 +15,67 @@ class CreatedAccountPage(BasePage):
             screenshot_service: Serviço opcional para evidências em falhas.
         """
         super().__init__(page, screenshot_service)
-        self.nome_input = page.locator("input[type='email']")
-        self.sobrenome_input = page.locator("//button[.//span[text()='Avançar']]")
-        self.dia_input = page.locator("//button[.//span[text()='Avançar']]")
-        self.mes_box = page.get_by_role("combobox")
-        self.senha_input = page.locator("input[name='senha']")
-        self.submit_button = page.locator("button[type='submit']")
+        self.nome_input = page.locator("input[id='firstName']")
+        self.sobrenome_input = page.locator("input[id='lastName']")
+        self.avancar_button = page.locator("//button[.//span[text()='Avançar']]")
+        self.dia_input = page.locator("input[id='day']")
+        self.mes_box = page.locator("//*[@id='month']")
+        self.ano_input = page.locator("input[id='year']")
+        self.genero_box = page.locator("//div[@role='combobox'][.//span[normalize-space()='Gênero']]")
+        self.email_sugestao_text = page.locator("//div[@id='selectionc22']")
+        self.crie_email_radio = page.locator("//input[@aria-labelledby='selectionc22']")
+        self.nome_email = page.locator("input[name='Username']")
+        self.senha_input = page.locator("input[name='Passwd']")
+        self.senha_confirmar_input = page.locator("input[name='PasswdAgain']")
+        self.confirme_informacoes_text = page.locator("//span[contains(text(), 'Confirme algumas')]")
 
-    def abrir(self, base_url: str):
-        """Navega para a URL base exibindo a tela de login.
-
-        Args:
-            base_url: Endereço raiz configurado para a aplicação.
-        """
-        self.open(base_url)
-        self.click(self.fazer_login_click)
-
-    def realizar_login(self, usuario: str, senha: str):
-        """Preenche as credenciais e aciona o envio do formulário de login.
+    def inserir_nome_sobrenome(self, nome: str, sobrenome: str):
+        """Preenche nome e sobrenome na criação de conta.
 
         Args:
-            usuario: Nome de usuário válido para autenticação.
-            senha: Senha correspondente ao usuário informado.
+            nome: Nome de usuário válido para autenticação.
+            sobrenome: Nome de usuário válido para autenticação.
         """
-        self.wait_for_locator(self.usuario_input)
-        self.fill(self.usuario_input, usuario)
+        self.fill(self.nome_input, nome)
+        self.fill(self.sobrenome_input, sobrenome)
         self.click(self.avancar_button)
+
+    def inserir_infos_basicas(self, dia: str, mes: str, ano: str, genero: str):
+        """Preenche Data de Nascimento e Genero na criação de conta.
+
+        Args:
+            dia: dia de nascimento.
+            mes: mes de nascimento (Ex: Janeiro, Fevereiro, Março).
+            ano: ano de nascimento
+            genero: tipo de genero (Ex: Mulher, Homem, Prefiro não dizer).
+        """
+        locator_mes = f"//li[.//span[normalize-space()='{mes}']]"
+        locator_genero = f"//ul[@role='listbox' and @aria-label='Gênero']//li[.//span[normalize-space()='{genero}']]"
+
+        self.fill(self.dia_input, dia)
+        self.click_and_select(self.mes_box,option_locator= locator_mes)
+        self.fill(self.ano_input, ano)
+        self.click_and_select(self.genero_box,option_locator=locator_genero)
+        self.click(self.avancar_button)
+
+    def inserir_username(self, username: str):
+        """Preenche username na criação de conta.
+
+        Args:
+            username: Nome de usuário válido para o email.
+        """
+        if self.is_visible(self.email_sugestao_text):
+            self.click(self.crie_email_radio)
+        self.fill(self.nome_email, username)
+        self.cli
+        ck(self.avancar_button,)
+
+    def inserir_senha(self, senha: str):
+        """Preenche senha na criação de conta.
+
+        Args:
+            senha: Senha válida para o email.
+        """
         self.fill(self.senha_input, senha)
-        self.click(self.submit_button)
+        self.fill(self.senha_confirmar_input, senha)
+        self.click(self.avancar_button)
