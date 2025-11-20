@@ -6,5 +6,4 @@ def test_login_sucesso(page, screenshot_service, base_url):
 
     login_page.abrir(base_url)
     # login_page.realizar_login("usuario_valido", "senha_valida")
-
-    login_page.should_see_text("Fazer Login", screenshot_on_fail=True)
+    login_page.validar_tela_login()
