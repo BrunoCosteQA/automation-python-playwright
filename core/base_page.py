@@ -131,6 +131,38 @@ class BasePage:
         """
         expect(self._resolve_locator(locator)).to_be_hidden(timeout=timeout)
 
+    def is_visible(self, locator: Locatable, timeout: Optional[int] = None) -> bool:
+        """Retorna se o locator está visível sem levantar exceções em falha.
+
+        Args:
+            locator: Elemento a ser validado.
+            timeout: Tempo máximo de espera pela visibilidade.
+
+        Returns:
+            ``True`` quando o elemento está visível dentro do timeout; caso contrário ``False``.
+        """
+        resolved = self._resolve_locator(locator)
+        try:
+            return resolved.is_visible(timeout=timeout)
+        except Exception:
+            return False
+
+    def is_hidden(self, locator: Locatable, timeout: Optional[int] = None) -> bool:
+        """Indica se o locator está oculto ou ausente, retornando booleano.
+
+        Args:
+            locator: Elemento que deve estar oculto.
+            timeout: Tempo máximo de espera pelo estado oculto.
+
+        Returns:
+            ``True`` quando o elemento está oculto ou não existe; caso contrário ``False``.
+        """
+        resolved = self._resolve_locator(locator)
+        try:
+            return resolved.is_hidden(timeout=timeout)
+        except Exception:
+            return False
+
     def expect_text(self, locator: Locatable, text: str, timeout: Optional[int] = None):
         """Verifica se o locator apresenta exatamente o texto esperado.
 
