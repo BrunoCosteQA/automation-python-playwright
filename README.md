@@ -1,4 +1,4 @@
-# Testes de Frontend com Playwright + Pytest
+# Testes Web com Playwright + Pytest
 
 Este repositório fornece um template enxuto para automação web com **Playwright** e **Pytest**, seguindo os princípios de Page Objects leves, serviços desacoplados e execução segura em pipeline.
 
