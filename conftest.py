@@ -1,7 +1,6 @@
 import pytest
 from playwright.sync_api import Error, sync_playwright
 from pytest_html import extras as html_extras
-
 from core.screenshot_service import ScreenshotService
 
 
@@ -155,4 +154,4 @@ def pytest_runtest_makereport(item, call):
 
 
 def pytest_html_report_title(report):
-    report.title = "Relatório Frontend - Qualidade é Estratégia"
+    report.title = "Relatório"
