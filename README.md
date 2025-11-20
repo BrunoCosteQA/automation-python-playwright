@@ -24,7 +24,7 @@ tests_frontend/
 
 Instalação das dependências e navegadores:
 ```bash
-pip install -r tests_frontend/requirements.txt
+pip install -r requirements.txt
 playwright install
 ```
 
