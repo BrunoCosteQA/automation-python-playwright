@@ -1,66 +1,56 @@
-# Testes Web com Playwright + Pytest
+# Automação Web com Playwright + Pytest
 
-Este repositório fornece um template enxuto para automação web com **Playwright** e **Pytest**, seguindo os princípios de Page Objects leves, serviços desacoplados e execução segura em pipeline.
+Template mínimo para criar e validar fluxos web usando **Playwright** (API síncrona) e **Pytest**. O projeto adota Page Objects enxutos, serviços reutilizáveis e fixtures de sessão para facilitar execução local ou em pipeline.
 
-## Estrutura
+## Estrutura do projeto
 ```
-tests_frontend/
-├─ core/
-│  ├─ base_page.py
-│  └─ screenshot_service.py
-├─ pages/
-│  └─ login_page.py
-├─ tests/
-│  └─ test_login.py
-├─ conftest.py
-├─ requirements.txt
-├─ pytest.ini
-└─ run_local.sh        # opcional (gera HTML apenas localmente)
-```
+core/
+├─ base_page.py            # Ações e asserts genéricos para páginas
+└─ screenshot_service.py   # Serviço opcional de evidências (screenshot, console, trace)
+pages/
+├─ login_page.py           # Fluxo de autenticação e navegação para criação de conta
+└─ create_account_page.py  # Formulário de criação de conta Google
+util/
+└─ generate_data.py        # Geração de strings aleatórias/UUIDs
+conftest.py                # Fixtures Playwright + hooks do pytest-html
+pytest.ini                 # Configuração padrão do Pytest
+requirements.txt           # Dependências do projeto
+run_local.sh               # Atalho para execução local com HTML report
+``` 
 
 ## Pré-requisitos
 - Python 3.10+
 - Navegadores Playwright instalados
 
-Instalação das dependências e navegadores:
+Instale dependências e navegadores:
 ```bash
 pip install -r requirements.txt
 playwright install
 ```
 
-## Execução
-Por padrão a pipeline não gera relatório HTML. Para rodar os testes com a configuração padrão:
+## Execução dos testes
+Com a configuração padrão (sem HTML):
 ```bash
-cd tests_frontend
 pytest
 ```
 
-Para gerar relatório HTML localmente use o script auxiliar:
+Gerar relatório HTML localmente:
 ```bash
-cd tests_frontend
 ./run_local.sh
 ```
 
-### Configuração de URL por ambiente
-O fixture `base_url` pode ser configurado via linha de comando de duas formas:
+### Configuração de ambiente/base URL
+- Selecione um ambiente predefinido: `pytest --env=hml`
+- Forneça uma URL customizada (tem prioridade): `pytest --base-url=https://minha-url.com`
 
-- Selecionando um ambiente predefinido: `pytest --env=hml`
-- Informando uma URL personalizada (sobrescreve o ambiente): `pytest --base-url=https://minha-url.com`
+Mapeamento padrão (`conftest.py`): dev/hml/prod apontam para `https://www.google.com`. O `base_url` é injetado no contexto Playwright, permitindo usar caminhos relativos nas páginas.
 
-Ambientes disponíveis: `dev` (padrão), `hml` e `prod`.
+## Classes e serviços principais
+- **BasePage (`core/base_page.py`)**: helper para abrir URLs, clicar, preencher campos, aguardar estados de `Locator` e validar texto/URL/título. Inclui utilitários booleanos (`is_visible`, `is_hidden`) e suporte opcional a screenshots em falhas via `ScreenshotService`.
+- **ScreenshotService (`core/screenshot_service.py`)**: salva evidências em `evidencias/<YYYY-MM-DD>/` com nomes únicos. Respeita `DISABLE_SCREENSHOTS=1` e pode exportar logs de console e traces Playwright quando habilitados.
+- **LoginPage (`pages/login_page.py`)**: modela a tela de login do Google, abrindo a página inicial, acionando “Fazer login” e permitindo iniciar o fluxo de criação de conta ou realizar login com usuário/senha.
+- **CreateAccountPage (`pages/create_account_page.py`)**: cobre o formulário de criação de conta (nome, data de nascimento/gênero, username, senha) usando seletores dinâmicos para listas suspensas.
+- **Geração de dados (`util/generate_data.py`)**: produz UUIDs e strings aleatórias para evitar colisões em testes de criação de conta.
 
-O contexto do Playwright já é iniciado com essa `base_url`, permitindo usar caminhos relativos (por exemplo, `page.goto("/")`) sem precisar repetir a URL completa.
-
-### Dica rápida (erro de browser ausente)
-Se o Pytest pular os testes com a mensagem:
-```
-Playwright browsers não encontrados. Execute 'playwright install' antes de rodar os testes.
-```
-basta rodar o comando `playwright install` para baixar os navegadores necessários.
-
-## Screenshots
-- Salvos automaticamente em `evidencias/<YYYY-MM-DD>/` quando `screenshot_on_fail=True` nas asserções ou via hook do pytest-html.
-- Para desabilitar (por exemplo, em pipeline), defina `DISABLE_SCREENSHOTS=1` no ambiente.
-
-## Paralelismo
-A geração de screenshots usa timestamp + UUID para evitar colisões em execuções com `pytest-xdist`.
+## Hooks e evidências
+O hook `pytest_runtest_makereport` anexa screenshots, logs de console e traces ao HTML report apenas quando os testes falham e o Pytest é executado com `--html`. A nomeação inclui `workerid` para evitar colisões em execuções paralelas.

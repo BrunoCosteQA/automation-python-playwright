@@ -67,7 +67,7 @@ class CreateAccountPage(BasePage):
         if self.is_visible(self.email_sugestao_text):
             self.click(self.crie_email_radio)
         self.fill(self.nome_email, username)
-        self.click(self.avancar_button,)
+        self.click(self.avancar_button)
 
     def inserir_senha(self, senha: str):
         """Preenche senha na criação de conta.
