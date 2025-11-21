@@ -15,19 +15,20 @@ class CreateAccountPage(BasePage):
             screenshot_service: Serviço opcional para evidências em falhas.
         """
         super().__init__(page, screenshot_service)
-        self.nome_input = page.locator("input[id='firstName']")
+        self.nome_input = page.get_by_label('Nome', exact=True)
         self.sobrenome_input = page.locator("input[id='lastName']")
-        self.avancar_button = page.locator("//button[.//span[text()='Avançar']]")
+        self.avancar_button = page.get_by_role("button", name="Avançar")
         self.dia_input = page.locator("input[id='day']")
         self.mes_box = page.locator("//*[@id='month']")
         self.ano_input = page.locator("input[id='year']")
         self.genero_box = page.locator("//div[@role='combobox'][.//span[normalize-space()='Gênero']]")
-        self.email_sugestao_text = page.locator("//div[@id='selectionc22']")
-        self.crie_email_radio = page.locator("//input[@aria-labelledby='selectionc22']")
+        self.email_sugestao_text = page.get_by_role('radio', name='Crie seu próprio endereço do Gmail')
+        self.email_sugestao_radio = page.locator("//input[@type='radio'][@aria-labelledby='selectionc22']")
         self.nome_email = page.locator("input[name='Username']")
         self.senha_input = page.locator("input[name='Passwd']")
         self.senha_confirmar_input = page.locator("input[name='PasswdAgain']")
         self.confirme_informacoes_text = page.locator("//span[contains(text(), 'Confirme algumas')]")
+
 
     def inserir_nome_sobrenome(self, nome: str, sobrenome: str):
         """Preenche nome e sobrenome na criação de conta.
@@ -64,8 +65,8 @@ class CreateAccountPage(BasePage):
         Args:
             username: Nome de usuário válido para o email.
         """
-        if self.is_visible(self.email_sugestao_text):
-            self.click(self.crie_email_radio)
+        if self.exists(self.email_sugestao_text, timeout=5000):
+            self.click(self.email_sugestao_radio)
         self.fill(self.nome_email, username)
         self.click(self.avancar_button)
 
