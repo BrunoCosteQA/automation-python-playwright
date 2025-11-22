@@ -1,5 +1,5 @@
 from typing import Optional
-from playwright.sync_api import Page
+from playwright.sync_api import Page, TimeoutError as PlaywrightTimeoutError
 from core.base_page import BasePage
 from core.screenshot_service import ScreenshotService
 
@@ -16,12 +16,12 @@ class LoginPage(BasePage):
         """
         super().__init__(page, screenshot_service)
         self.fazer_login_click = page.locator("//a[@aria-label='Fazer login']")
-        self.usuario_input = page.locator("input[type='email']")
-        self.avancar_button = page.locator("//button[.//span[text()='Avançar']]")
+        self.usuario_input = page.get_by_role("textbox", name="E-mail ou telefone")
+        self.avancar_button = page.get_by_role("button", name="Avançar")
         self.criar_conta_button = page.locator("//button[.//span[text()='Criar conta']]")
         self.uso_pessoal_button = page.locator("//li[.//span[text()='Para uso pessoal']]")
-        self.senha_input = page.locator("input[name='senha']")
-        self.submit_button = page.locator("button[type='submit']")
+        self.senha_input = page.get_by_label("Senha", exact=False)
+        self.submit_button = page.get_by_role("button", name="Próxima")
 
     def abrir(self, base_url: str):
         """Navega para a URL base exibindo a tela de login.
@@ -35,7 +35,7 @@ class LoginPage(BasePage):
     def criar_conta(self):
         """Preenche as credenciais e aciona o envio do formulário de login.
         """
-        self.click(self.criar_conta_button)
+        self.click(self.criar_conta_button, wait_before_ms=3000)
         self.click(self.uso_pessoal_button)
 
     def realizar_login(self, usuario: str, senha: str):

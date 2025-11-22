@@ -1,4 +1,5 @@
-pytest
+pytest~=9.0.1
 pytest-html
 pytest-xdist
-playwright
+playwright~=1.56.0
+Faker~=38.2.0
