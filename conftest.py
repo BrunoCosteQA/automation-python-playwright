@@ -1,6 +1,9 @@
+import os
+
 import pytest
 from playwright.sync_api import Error, sync_playwright
 from pytest_html import extras as html_extras
+
 from core.screenshot_service import ScreenshotService
 
 
@@ -28,6 +31,7 @@ def pytest_addoption(parser):
 
 # ---------------- FIXTURES PLAYWRIGHT ----------------
 
+
 @pytest.fixture(scope="session")
 def playwright_instance():
     with sync_playwright() as p:
@@ -36,8 +40,9 @@ def playwright_instance():
 
 @pytest.fixture(scope="session")
 def browser(playwright_instance):
+    headless = os.getenv("HEADLESS", "true").lower() != "false"
     try:
-        browser = playwright_instance.chromium.launch(headless=False)
+        browser = playwright_instance.chromium.launch(headless=headless)
     except Error as exc:  # navegadores Playwright ausentes
         pytest.skip(
             "Playwright browsers não encontrados. Execute 'playwright install' antes de rodar os testes.",
@@ -91,6 +96,7 @@ def page(context):
 
 # ---------------- FIXTURES DE CONFIG / SERVICE ----------------
 
+
 @pytest.fixture(scope="session")
 def screenshot_service():
     return ScreenshotService(base_dir="evidencias")
@@ -112,6 +118,7 @@ def base_url(pytestconfig):
 
 
 # ---------------- HOOK pytest-html (opcional) ----------------
+
 
 @pytest.hookimpl(hookwrapper=True)
 def pytest_runtest_makereport(item, call):
